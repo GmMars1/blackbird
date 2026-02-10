@@ -242,6 +242,27 @@ Exit criteria:
 
 ---
 
+
+## Double-Check Findings (v0.1 Readiness Review)
+
+A second pass against the architecture yields the following findings that should be tracked before implementation starts:
+
+- **Policy completeness risk**: every registered tool needs an explicit policy rule test, or the system can drift into accidental deny/allow confusion.
+- **Adapter bypass risk**: framework maintainers can introduce new execution paths that skip interception unless adapter contract tests lock this down.
+- **Wrapper drift risk**: if wrappers expose "escape hatch" arguments (for example raw command strings), determinism degrades immediately.
+- **Audit integrity risk**: append-only storage must be enforced at storage level, not only application logic.
+- **Sandbox mismatch risk**: local development and CI sandbox settings must match production defaults to prevent false confidence.
+
+Recommended mitigation gates for v0.1:
+
+1. Contract tests proving every tool invocation path emits a `ToolProposal`.
+2. Golden tests for policy evaluation order and reason codes.
+3. Negative tests for path traversal, domain bypass, and argument type confusion.
+4. Tamper-evidence checks on audit events (hash chaining or signed batches).
+5. CI profile that runs with production-equivalent sandbox/network restrictions.
+
+---
+
 ## v0.1 Non-Negotiables
 
 - No probabilistic policy adjudication.
